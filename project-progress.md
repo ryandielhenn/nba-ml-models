@@ -16,9 +16,11 @@ This project aims to predict NBA game outcomes and player shooting performance b
 
 ## Team Member Responsibilities
 
-- **Ryan Dielhenn:** Machine learning model development, training, and evaluation; data preprocessing and feature engineering; performance metrics analysis; project documentation and reporting; data visualization development.
-- **Momoka Aung:** Machine learning model development, training, and evaluation; data preprocessing and feature engineering using NBA statistics; performance metrics analysis for model comparison;
-- **[Name 3]:** [Specific tasks and areas of responsibility]
+- **Ryan Dielhenn:** Feature engineering, dimensionality reduction (PCA), model training
+- **Momoka Aung:** Model training and analysis.
+- **Angel:** Data Visualization
+- **Jesus:** Hyperparameter Tuning
+- **Harshil:** Performance metrics analysis, project documentation and reporting
 
 ---
 
