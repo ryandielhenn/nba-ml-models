@@ -1,6 +1,6 @@
 # Project Progress Report
 
-**Team Members:** Ryan Dielhenn, [Name 2], [Name 3]  
+**Team Members:** Ryan Dielhenn, Harshil Patel, [Name 3]  
 **Project Lead:** [Name]  
 **Date:** Friday, November 21, 2025
 
