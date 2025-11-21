@@ -1,6 +1,6 @@
 # NBA Player Performance and Game Outcome Prediction - Progress Report
 
-**Team Members:** Ryan Dielhenn, Momoka Aung, Angel Trujillo, Jesus [Last Name], Harshil Patel
+**Team Members:** Ryan Dielhenn, Momoka Aung, Angel Trujillo, Jesus Villa, Harshil Patel
 **Project Lead:** Ryan Dielhenn  
 **Date:** November 21, 2025
 
@@ -17,7 +17,7 @@
 - **Ryan Dielhenn (Project Lead):** Feature engineering, team data aggregation, classification models
 - **Momoka Aung:** Documentation, feature engineering support
 - **Angel Trujillo:** Exploratory data analysis, data visualizations
-- **Jesus [Last Name]:** Hyperparameter tuning, additional model implementations
+- **Jesus Villa:** Hyperparameter tuning, additional model implementations
 - **Harshil Patel:** Performance analysis visualizations, metrics evaluation
 
 ---
