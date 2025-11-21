@@ -18,7 +18,7 @@
 - **Momoka Aung:** Documentation, feature engineering support
 - **Angel Trujillo:** Exploratory data analysis, data visualizations
 - **Jesus [Last Name]:** Hyperparameter tuning, additional model implementations
-- **Harshil [Last Name]:** Performance analysis visualizations, metrics evaluation
+- **Harshil Patel:** Performance analysis visualizations, metrics evaluation
 
 ---
 
