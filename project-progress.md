@@ -1,6 +1,6 @@
 # NBA Player Performance and Game Outcome Prediction - Progress Report
 
-**Team Members:** Ryan Dielhenn, Momoka Aung, Angel [Last Name], Jesus [Last Name], Harshil Patel
+**Team Members:** Ryan Dielhenn, Momoka Aung, Angel Trujillo, Jesus [Last Name], Harshil Patel
 **Project Lead:** Ryan Dielhenn  
 **Date:** November 21, 2025
 
