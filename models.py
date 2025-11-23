@@ -1,11 +1,13 @@
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
+
 # TODO (Jesus): Add these imports after implementing XGBoost/LightGBM
 # from xgboost import XGBRegressor, XGBClassifier
 # from lightgbm import LGBMRegressor, LGBMClassifier
 
-def tune_hyperparameters(X_train, y_train, model_type='random_forest'):
+
+def tune_hyperparameters(X_train, y_train, model_type: str = "random_forest"):
     """
     Perform hyperparameter tuning using GridSearchCV or RandomizedSearchCV.
     Cross-validation is handled automatically by these methods.
@@ -68,32 +70,26 @@ def tune_hyperparameters(X_train, y_train, model_type='random_forest'):
 def regression_configs_baseline():
     """
     Baseline regression model configurations with default hyperparameters.
-    
+
     Returns:
         dict: Regression model configurations (untuned)
     """
     models = {
-        'Linear Regression': {
-            'model': LinearRegression(),
-            'use_scaled': True,
-            'has_coef': True
+        "Linear Regression": {
+            "model": LinearRegression(),
+            "use_scaled": True,
+            "has_coef": True,
         },
-        'Random Forest': {
-            'model': RandomForestRegressor(
-                n_estimators=100,
-                random_state=42
-            ),
-            'use_scaled': False,
-            'has_coef': False
+        "Random Forest": {
+            "model": RandomForestRegressor(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
         },
-        'Gradient Boosting': {
-            'model': GradientBoostingRegressor(
-                n_estimators=100,
-                random_state=42
-            ),
-            'use_scaled': False,
-            'has_coef': False
-        }
+        "Gradient Boosting": {
+            "model": GradientBoostingRegressor(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
+        },
     }
     return models
 
@@ -101,43 +97,43 @@ def regression_configs_baseline():
 def regression_configs_tuned():
     """
     Tuned regression model configurations with optimized hyperparameters.
-    
+
     TODO (Jesus): After running tune_hyperparameters() on regression models:
     1. Run: grid_search = tune_hyperparameters(X_train, y_train, 'random_forest')
     2. Print: grid_search.best_params_
     3. Update the parameters below with best_params_ values
     4. Repeat for gradient_boosting, xgboost, lightgbm
     5. Uncomment XGBoost and LightGBM sections after adding them
-    
+
     Returns:
         dict: Regression model configurations (tuned)
     """
     models = {
-        'Linear Regression': {
-            'model': LinearRegression(),
-            'use_scaled': True,
-            'has_coef': True
+        "Linear Regression": {
+            "model": LinearRegression(),
+            "use_scaled": True,
+            "has_coef": True,
         },
-        'Random Forest (Tuned)': {
-            'model': RandomForestRegressor(
-                n_estimators=100,      # TODO: Replace with best_params_['n_estimators']
-                max_depth=None,        # TODO: Replace with best_params_['max_depth']
-                min_samples_split=2,   # TODO: Replace with best_params_['min_samples_split']
-                random_state=42
+        "Random Forest (Tuned)": {
+            "model": RandomForestRegressor(
+                n_estimators=100,  # TODO: Replace with best_params_['n_estimators']
+                max_depth=None,  # TODO: Replace with best_params_['max_depth']
+                min_samples_split=2,  # TODO: Replace with best_params_['min_samples_split']
+                random_state=42,
             ),
-            'use_scaled': False,
-            'has_coef': False
+            "use_scaled": False,
+            "has_coef": False,
         },
-        'Gradient Boosting (Tuned)': {
-            'model': GradientBoostingRegressor(
-                n_estimators=100,      # TODO: Replace with best_params_['n_estimators']
-                learning_rate=0.1,     # TODO: Replace with best_params_['learning_rate']
-                max_depth=3,           # TODO: Replace with best_params_['max_depth']
-                random_state=42
+        "Gradient Boosting (Tuned)": {
+            "model": GradientBoostingRegressor(
+                n_estimators=100,  # TODO: Replace with best_params_['n_estimators']
+                learning_rate=0.1,  # TODO: Replace with best_params_['learning_rate']
+                max_depth=3,  # TODO: Replace with best_params_['max_depth']
+                random_state=42,
             ),
-            'use_scaled': False,
-            'has_coef': False
-        }
+            "use_scaled": False,
+            "has_coef": False,
+        },
         # TODO (Jesus): Uncomment after tuning XGBoost
         # 'XGBoost (Tuned)': {
         #     'model': XGBRegressor(
@@ -168,32 +164,26 @@ def regression_configs_tuned():
 def classification_configs_baseline():
     """
     Baseline classification model configurations with default hyperparameters.
-    
+
     Returns:
         dict: Classification model configurations (untuned)
     """
     models = {
-        'Logistic Regression': {
-            'model': LogisticRegression(max_iter=1000, random_state=42),
-            'use_scaled': True,
-            'has_coef': True
+        "Logistic Regression": {
+            "model": LogisticRegression(max_iter=1000, random_state=42),
+            "use_scaled": True,
+            "has_coef": True,
         },
-        'Random Forest': {
-            'model': RandomForestClassifier(
-                n_estimators=100,
-                random_state=42
-            ),
-            'use_scaled': False,
-            'has_coef': False
+        "Random Forest": {
+            "model": RandomForestClassifier(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
         },
-        'Gradient Boosting': {
-            'model': GradientBoostingClassifier(
-                n_estimators=100,
-                random_state=42
-            ),
-            'use_scaled': False,
-            'has_coef': False
-        }
+        "Gradient Boosting": {
+            "model": GradientBoostingClassifier(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
+        },
     }
     return models
 
@@ -201,43 +191,43 @@ def classification_configs_baseline():
 def classification_configs_tuned():
     """
     Tuned classification model configurations with optimized hyperparameters.
-    
+
     TODO (Jesus): After running tune_hyperparameters() on classification models:
     1. Run: grid_search = tune_hyperparameters(X_train, y_train, 'random_forest')
     2. Print: grid_search.best_params_
     3. Update the parameters below with best_params_ values
     4. Repeat for gradient_boosting, xgboost, lightgbm
     5. Uncomment XGBoost and LightGBM sections after adding them
-    
+
     Returns:
         dict: Classification model configurations (tuned)
     """
     models = {
-        'Logistic Regression': {
-            'model': LogisticRegression(max_iter=1000, random_state=42),
-            'use_scaled': True,
-            'has_coef': True
+        "Logistic Regression": {
+            "model": LogisticRegression(max_iter=1000, random_state=42),
+            "use_scaled": True,
+            "has_coef": True,
         },
-        'Random Forest (Tuned)': {
-            'model': RandomForestClassifier(
-                n_estimators=100,      # TODO: Replace with best_params_['n_estimators']
-                max_depth=None,        # TODO: Replace with best_params_['max_depth']
-                min_samples_split=2,   # TODO: Replace with best_params_['min_samples_split']
-                random_state=42
+        "Random Forest (Tuned)": {
+            "model": RandomForestClassifier(
+                n_estimators=100,  # TODO: Replace with best_params_['n_estimators']
+                max_depth=None,  # TODO: Replace with best_params_['max_depth']
+                min_samples_split=2,  # TODO: Replace with best_params_['min_samples_split']
+                random_state=42,
             ),
-            'use_scaled': False,
-            'has_coef': False
+            "use_scaled": False,
+            "has_coef": False,
         },
-        'Gradient Boosting (Tuned)': {
-            'model': GradientBoostingClassifier(
-                n_estimators=100,      # TODO: Replace with best_params_['n_estimators']
-                learning_rate=0.1,     # TODO: Replace with best_params_['learning_rate']
-                max_depth=3,           # TODO: Replace with best_params_['max_depth']
-                random_state=42
+        "Gradient Boosting (Tuned)": {
+            "model": GradientBoostingClassifier(
+                n_estimators=100,  # TODO: Replace with best_params_['n_estimators']
+                learning_rate=0.1,  # TODO: Replace with best_params_['learning_rate']
+                max_depth=3,  # TODO: Replace with best_params_['max_depth']
+                random_state=42,
             ),
-            'use_scaled': False,
-            'has_coef': False
-        }
+            "use_scaled": False,
+            "has_coef": False,
+        },
         # TODO (Jesus): Uncomment after tuning XGBoost
         # 'XGBoost (Tuned)': {
         #     'model': XGBClassifier(
