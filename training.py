@@ -1,4 +1,3 @@
-from typing import List
 import numpy as np
 import pandas as pd
 import data_utils
@@ -19,69 +18,6 @@ from sklearn.metrics import (
     confusion_matrix,
 )
 from sklearn.preprocessing import StandardScaler
-
-
-def tune_hyperparameters(X_train: List, 
-                         y_train: List, 
-                         model_type: str = "random_forest"):
-    """
-    Perform hyperparameter tuning using GridSearchCV or RandomizedSearchCV.
-    Cross-validation is handled automatically by these methods.
-
-    Args:
-        X_train: Training features
-        y_train: Training target
-        model_type: Type of model to tune ('random_forest', 'gradient_boosting', 'xgboost', 'lightgbm')
-
-    Returns:
-        GridSearchCV object containing:
-            - best_estimator_: The best trained model
-            - best_params_: The best parameter combination
-            - best_score_: The best cross-validation score
-            - cv_results_: Detailed results for all parameter combinations
-
-    Usage:
-        grid_search = tune_hyperparameters(X_train, y_train, 'random_forest')
-        best_model = grid_search.best_estimator_
-        best_params = grid_search.best_params_
-        y_pred = best_model.predict(X_test)
-
-    TODO (Jesus): Implement this function with:
-        1. Define param_grid for each model_type
-        2. Create GridSearchCV with cv=5
-        3. Fit and return the grid_search object
-    """
-    # TODO: Add imports at top of file if needed
-    # from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-
-    # TODO: Define parameter grids for different models
-    # param_grids = {
-    #     'random_forest': {
-    #         'n_estimators': [50, 100, 200],
-    #         'max_depth': [10, 20, None],
-    #         'min_samples_split': [2, 5, 10]
-    #     },
-    #     'gradient_boosting': {
-    #         'n_estimators': [50, 100, 200],
-    #         'learning_rate': [0.01, 0.1, 0.2],
-    #         'max_depth': [3, 5, 7]
-    #     }
-    # }
-
-    # TODO: Create GridSearchCV and fit
-    # grid_search = GridSearchCV(
-    #     estimator=...,
-    #     param_grid=param_grids[model_type],
-    #     cv=5,  # 5-fold cross-validation (automatic)
-    #     scoring='r2',
-    #     n_jobs=-1,  # Use all CPU cores
-    #     verbose=1
-    # )
-    # grid_search.fit(X_train, y_train)
-    # return grid_search
-
-    raise NotImplementedError("Jesus: Implement hyperparameter tuning here!")
-
 
 def train_and_evaluate_models(X_train, 
                               X_test, 
