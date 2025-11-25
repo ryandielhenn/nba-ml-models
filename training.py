@@ -4,6 +4,7 @@ import pandas as pd
 import data_utils
 from sklearn.model_selection import train_test_split
 from models import classification_configs_baseline, regression_configs_baseline
+from analysis_visuals import actual_vs_pred
 from sklearn.metrics import (
     # Regression metrics
     mean_squared_error,
@@ -132,7 +133,10 @@ def train_and_evaluate_models(X_train,
         model = config["model"]
         model.fit(X_train_use, y_train)
         y_pred = model.predict(X_test_use)
-
+        
+        #Visualize actual vs predicted for regression models
+        actual_vs_pred(y_test, y_pred, title=f"{model_name} - Actual vs Predicted")
+        
         # Calculate metrics based on task type
         if classification:
             # Classification metrics
