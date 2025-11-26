@@ -26,3 +26,27 @@ def actual_vs_pred(y_test, y_pred, title="Actual vs Predicted"):
     plt.legend()
     plt.grid(True)
     plt.show()
+    
+    
+def residuals_plot(y_test, y_pred, title="Residuals Plot"):
+    """
+    Plot residuals for regression models.
+
+    Args:
+        y_test: True target values from the test set
+        y_pred: Predicted values from the model
+        title: Title for the plot
+    """
+    residuals = y_test - y_pred
+    plt.scatter(y_pred, residuals, alpha=0.6, s=20)
+    plt.axhline(y=0, color='r', linestyle='--', linewidth=2)
+    
+    plt.xlabel("Predicted")
+    plt.ylabel("Residuals")
+    plt.title(title)
+    plt.grid(True)
+    plt.show()
+        
+    
+# def feature_importance_plot():
+

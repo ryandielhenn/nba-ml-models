@@ -3,7 +3,7 @@ import pandas as pd
 import data_utils
 from sklearn.model_selection import train_test_split
 from models import classification_configs_baseline, regression_configs_baseline
-from analysis_visuals import actual_vs_pred
+from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot
 from sklearn.metrics import (
     # Regression metrics
     mean_squared_error,
@@ -72,6 +72,7 @@ def train_and_evaluate_models(X_train,
         
         #Visualize actual vs predicted for regression models
         actual_vs_pred(y_test, y_pred, title=f"{model_name} - Actual vs Predicted")
+        residuals_plot(y_test, y_pred, title=f"{model_name} - Residuals Plot")
         
         # Calculate metrics based on task type
         if classification:
