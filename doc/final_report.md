@@ -66,11 +66,6 @@ We use the **NBA player stats (2024–2025 season)** dataset with **16,512 rows*
 
 ## 5. Data Visualization
 To better understand the performance of our regression and classification models, we generated several visualizations. These help interpret prediction accuracy, residual patterns, and feature importance. Below, we include and describe the most important plots produced during the analysis.
-### 5.1 Actual vs. Predicted PTS (Regression)
-
-### 5.2 Residual Plot (Regression)
-
-### 5.3 Feature Importance (Tree Models)
 ---
 
 ## 6. Experiments
