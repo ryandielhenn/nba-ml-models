@@ -10,16 +10,18 @@ def actual_vs_pred(y_test, y_pred, title="Actual vs Predicted"):
         y_pred: Predicted values from the model
         title: Title for the plot
     """
+    # Scatter plot of actual vs predicted values
     plt.scatter(y_test, y_pred, alpha=0.6, s=20, label="Predicted Points")
     min_val = min(min(y_test), min(y_pred))
     max_val = max(max(y_test), max(y_pred))
+    
     
     plt.plot([min_val, max_val], [min_val, max_val],
              linestyle="--",
              color="black",
              linewidth=2,
              label="Perfect Prediction Line")
-    
+
     plt.xlabel("Actual")
     plt.ylabel("Predicted")
     plt.title(title)
@@ -37,6 +39,7 @@ def residuals_plot(y_test, y_pred, title="Residuals Plot"):
         y_pred: Predicted values from the model
         title: Title for the plot
     """
+    # Calculate residuals
     residuals = y_test - y_pred
     plt.scatter(y_pred, residuals, alpha=0.6, s=20)
     plt.axhline(y=0, color='r', linestyle='--', linewidth=2)
@@ -48,5 +51,27 @@ def residuals_plot(y_test, y_pred, title="Residuals Plot"):
     plt.show()
         
     
-# def feature_importance_plot():
+def feature_importance_plot(importances, feature_names, title="Feature Importances"):
+    """
+    Plot feature importances for models that provide them.
+
+    Args:
+        importances: Array of feature importances
+        feature_names: List of feature names corresponding to the importances
+        title: Title for the plot
+    """
+    # Sort importances and feature names
+    indices = np.argsort(importances)[::-1]
+    sorted_importances = importances[indices]
+    sorted_feature_names = [feature_names[i] for i in indices]
+    
+    plt.figure(figsize=(10, 6))
+    plt.bar(range(len(sorted_importances)), sorted_importances, align='center')
+    plt.xticks(range(len(sorted_importances)), sorted_feature_names, rotation=90)
+    
+    plt.xlabel("Features")
+    plt.ylabel("Importance")
+    plt.title(title)
+    plt.tight_layout()
+    plt.show()
 

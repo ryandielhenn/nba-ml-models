@@ -70,9 +70,14 @@ def train_and_evaluate_models(X_train,
         model.fit(X_train_use, y_train)
         y_pred = model.predict(X_test_use)
         
-        #Visualize actual vs predicted for regression models
+        # Visualize results for regression models
         actual_vs_pred(y_test, y_pred, title=f"{model_name} - Actual vs Predicted")
+        # Visualize residuals for regression models
         residuals_plot(y_test, y_pred, title=f"{model_name} - Residuals Plot")
+        # Visualize feature importances if available
+        if hasattr(model, "feature_importances_"):
+            feature_importance_plot(model.feature_importances_, feature_cols, title=f"{model_name} - Feature Importances")
+        
         
         # Calculate metrics based on task type
         if classification:
