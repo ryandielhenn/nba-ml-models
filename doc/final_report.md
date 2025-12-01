@@ -1,4 +1,23 @@
-# NBA Player Stats and Team Win Prediction
+---
+classoption:
+  - twocolumn
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{adjustbox}
+  - \usepackage{etoolbox}
+  - \let\oldtabular\tabular
+  - \let\endoldtabular\endtabular
+  - \renewenvironment{tabular}{\begin{adjustbox}{max width=\columnwidth}\oldtabular}{\endoldtabular\end{adjustbox}}
+  - \let\longtable\tabular
+  - \let\endlongtable\endtabular
+  - \def\endhead{}
+  - \def\endfirsthead{}
+  - \def\endfoot{}
+  - \def\endlastfoot{}
+---
+
+# NBA Player Stats and  
+# Team Win Prediction
 
 ### A Machine Learning Pipeline for CS4661
 
