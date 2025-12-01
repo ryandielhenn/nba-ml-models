@@ -1,6 +1,8 @@
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint, uniform
 
 # TODO (Jesus): Add these imports after implementing XGBoost/LightGBM
 # from xgboost import XGBRegressor, XGBClassifier
@@ -18,54 +20,63 @@ def tune_hyperparameters(X_train, y_train, model_type: str = "random_forest"):
         model_type: Type of model to tune ('random_forest', 'gradient_boosting', 'xgboost', 'lightgbm')
 
     Returns:
-        GridSearchCV object containing:
+        RandomizedSearchCV object containing:
             - best_estimator_: The best trained model
             - best_params_: The best parameter combination
             - best_score_: The best cross-validation score
             - cv_results_: Detailed results for all parameter combinations
 
     Usage:
-        grid_search = tune_hyperparameters(X_train, y_train, 'random_forest')
-        best_model = grid_search.best_estimator_
-        best_params = grid_search.best_params_
+        randomized_search = tune_hyperparameters(X_train, y_train, 'random_forest')
+        best_model = randomized_search.best_estimator_
+        best_params = randomized_search.best_params_
         y_pred = best_model.predict(X_test)
-
-    TODO (Jesus): Implement this function with:
-        1. Define param_grid for each model_type
-        2. Create GridSearchCV with cv=5
-        3. Fit and return the grid_search object
     """
-    # TODO: Add imports at top of notebook if needed
-    # from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-    # TODO: Define parameter grids for different models
-    # param_grids = {
-    #     'random_forest': {
-    #         'n_estimators': [50, 100, 200],
-    #         'max_depth': [10, 20, None],
-    #         'min_samples_split': [2, 5, 10]
-    #     },
-    #     'gradient_boosting': {
-    #         'n_estimators': [50, 100, 200],
-    #         'learning_rate': [0.01, 0.1, 0.2],
-    #         'max_depth': [3, 5, 7]
-    #     }
-    # }
+    models = {
+        'random_forest': RandomForestClassifier(random_state=42),
+        'gradient_boosting': GradientBoostingClassifier(random_state=42),
+        'logistic_regression': LogisticRegression(random_state=42)
+    }
 
-    # TODO: Create GridSearchCV and fit
-    # grid_search = GridSearchCV(
-    #     estimator=...,
-    #     param_grid=param_grids[model_type],
-    #     cv=5,  # 5-fold cross-validation (automatic)
-    #     scoring='r2',
-    #     n_jobs=-1,  # Use all CPU cores
-    #     verbose=1
-    # )
-    # grid_search.fit(X_train, y_train)
-    # return grid_search
+    # Use RandomizedSearchCV because it's faster. 
+    # Fixed number of tries instead of all possible parameter combinations.
+    param_distributions = {
+        'random_forest': {
+            'n_estimators': randint(50, 500),
+            'max_depth': randint(10, 50),
+            'min_samples_split': randint(2, 20),
+            'min_samples_leaf': randint(1, 10),
+            'max_features': ['sqrt', 'log2', None]
+        },
+        'gradient_boosting': {
+            'n_estimators': randint(50, 300),
+            'learning_rate': uniform(0.01, 0.29),
+            'max_depth': randint(3, 10),
+            'min_samples_split': randint(2, 20),
+            'subsample': uniform(0.6, 0.4)
+        },
+        'logistic_regression': {
+            'C': uniform(0.01, 10),
+            'penalty': ['l1', 'l2'],
+            'solver': ['liblinear'],
+            'max_iter': [2000],
+            'class_weight': ['balanced', None]
+        }    
+    }
 
-    raise NotImplementedError("Jesus: Implement hyperparameter tuning here!")
-
+    random_search = RandomizedSearchCV(
+        estimator=models[model_type],
+        param_distributions=param_distributions[model_type],
+        n_iter=100,
+        cv=5,
+        scoring='accuracy',
+        n_jobs=-1,
+        verbose=1,
+        random_state=42
+    )
+    random_search.fit(X_train, y_train)
+    return random_search
 
 def regression_configs_baseline():
     """
@@ -188,7 +199,7 @@ def classification_configs_baseline():
     return models
 
 
-def classification_configs_tuned():
+def classification_configs_tuned(X_train, y_train):
     """
     Tuned classification model configurations with optimized hyperparameters.
 
@@ -202,28 +213,32 @@ def classification_configs_tuned():
     Returns:
         dict: Classification model configurations (tuned)
     """
+    # Run tuning for each model
+    logreg_search = tune_hyperparameters(X_train, y_train, 'logistic_regression')
+    rf_search = tune_hyperparameters(X_train, y_train, 'random_forest')
+    gb_search = tune_hyperparameters(X_train, y_train, 'gradient_boosting')
+
     models = {
-        "Logistic Regression": {
-            "model": LogisticRegression(max_iter=1000, random_state=42),
+        "Logistic Regression (Tuned)": {
+            "model": LogisticRegression(
+                **logreg_search.best_params_,
+                random_state=42
+                ),
             "use_scaled": True,
             "has_coef": True,
         },
         "Random Forest (Tuned)": {
             "model": RandomForestClassifier(
-                n_estimators=100,  # TODO: Replace with best_params_['n_estimators']
-                max_depth=None,  # TODO: Replace with best_params_['max_depth']
-                min_samples_split=2,  # TODO: Replace with best_params_['min_samples_split']
-                random_state=42,
+                **rf_search.best_params_,
+                random_state=42
             ),
             "use_scaled": False,
             "has_coef": False,
         },
         "Gradient Boosting (Tuned)": {
             "model": GradientBoostingClassifier(
-                n_estimators=100,  # TODO: Replace with best_params_['n_estimators']
-                learning_rate=0.1,  # TODO: Replace with best_params_['learning_rate']
-                max_depth=3,  # TODO: Replace with best_params_['max_depth']
-                random_state=42,
+                **gb_search.best_params_,
+                random_state=42
             ),
             "use_scaled": False,
             "has_coef": False,

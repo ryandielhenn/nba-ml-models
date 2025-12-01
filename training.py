@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import data_utils
 from sklearn.model_selection import train_test_split
-from models import classification_configs_baseline, regression_configs_baseline
+from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline
 from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot
 from sklearn.metrics import (
     # Regression metrics
@@ -45,7 +45,7 @@ def train_and_evaluate_models(X_train,
     print("=" * 80)
 
     models = (
-        classification_configs_baseline()
+        {**classification_configs_tuned(X_train, y_train), **classification_configs_baseline()}
         if classification
         else regression_configs_baseline()
     )
