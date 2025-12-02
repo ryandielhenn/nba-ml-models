@@ -1,5 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import RocCurveDisplay, ConfusionMatrixDisplay
+
+def plot_confusion_matrix(model_name, model, X_test, y_test):
+    # Confusion Matrix
+    ConfusionMatrixDisplay.from_estimator(model, X_test, y_test)
+    plt.title(f"{model_name} - Confusion Matrix")
+    plt.show()
+
+def plot_roc_curve(model_name, model, X_test, y_test):
+    # ROC Curve
+    RocCurveDisplay.from_estimator(model, X_test, y_test)
+    plt.title(f"{model_name} - ROC Curve")
+    plt.show()
 
 def actual_vs_pred(y_test, y_pred, title="Actual vs Predicted"):
     """

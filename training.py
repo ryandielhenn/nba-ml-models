@@ -3,7 +3,7 @@ import pandas as pd
 import data_utils
 from sklearn.model_selection import train_test_split
 from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline
-from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot
+from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot, plot_roc_curve, plot_confusion_matrix
 from sklearn.metrics import (
     # Regression metrics
     mean_squared_error,
@@ -70,20 +70,14 @@ def train_and_evaluate_models(X_train,
         model.fit(X_train_use, y_train)
         y_pred = model.predict(X_test_use)
         
-        # Visualize results for regression models
-        actual_vs_pred(y_test, y_pred, title=f"{model_name} - Actual vs Predicted")
-        # Visualize residuals for regression models
-        residuals_plot(y_test, y_pred, title=f"{model_name} - Residuals Plot")
-        # Visualize feature importances if available
-        if hasattr(model, "feature_importances_"):
-            feature_importance_plot(model.feature_importances_, feature_cols, title=f"{model_name} - Feature Importances")
-        
-        
         # Calculate metrics based on task type
         if classification:
             # Classification metrics
             y_pred_proba = model.predict_proba(X_test_use)[:, 1]
 
+            plot_roc_curve(model_name, model, X_test_use, y_test)
+            plot_confusion_matrix(model_name, model, X_test_use, y_test)
+            
             results[model_name] = {
                 "Accuracy": accuracy_score(y_test, y_pred),
                 "Precision": precision_score(y_test, y_pred),
@@ -104,6 +98,14 @@ def train_and_evaluate_models(X_train,
             print(f"Actual Win:   {cm[1][0]:3d} | {cm[1][1]:3d}")
 
         else:
+            # Visualize results for regression models
+            actual_vs_pred(y_test, y_pred, title=f"{model_name} - Actual vs Predicted")
+            # Visualize residuals for regression models
+            residuals_plot(y_test, y_pred, title=f"{model_name} - Residuals Plot")
+            # Visualize feature importances if available
+            if hasattr(model, "feature_importances_"):
+                feature_importance_plot(model.feature_importances_, feature_cols, title=f"{model_name} - Feature Importances")
+        
             # Regression metrics
             rmse = np.sqrt(mean_squared_error(y_test, y_pred))
             mae = mean_absolute_error(y_test, y_pred)

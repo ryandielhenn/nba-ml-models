@@ -16,7 +16,8 @@ header-includes:
   - \def\endlastfoot{}
 ---
 
-# NBA Player Stats and  
+# NBA Player Stats and
+
 # Team Win Prediction
 
 ### A Machine Learning Pipeline for CS4661
@@ -101,6 +102,34 @@ We use the **NBA player stats (2024–2025 season)** dataset with **16,512 rows*
 ## 5. Data Visualization
 
 To better understand the performance of our regression and classification models, we generated several visualizations for both the player-level regression task (PTS prediction) and the team-level classification task (win/loss prediction). These plots help illustrate how well the models fit the data, whether systematic errors exist, and which input features contribute most to the predictions.
+
+### 5.1 Player Points (PTS) Prediction Visualizations
+
+**Figure 1 — Linear Regression: Actual vs Predicted (PTS)**
+
+![Linear Regression - Actual vs Predicted](figures/linreg_actual_pred.png)
+
+This scatter plot compares the true PTS values with the model’s predictions. The points fall closely to the diagonal “perfect prediction” line, which matches our evaluation metrics (low RMSE, high R²), confirming that the model predicts player scoring very accurately. The linear structure indicates that player scoring is mostly driven by simple stats like FGA, 3P, and FTA, making it easy to predict.
+
+**Figure 2 — Linear Regression: Residuals Plot (PTS)**
+
+![Linear Regression - Residuals Plot](figures/linreg_residuals.png)
+
+The residual plot shows the difference between predicted and actual values across the full scoring range. The residuals are centered evenly around zero with no obvious pattern, meaning the model is not systematically over- or under-predicting for high- or low-scoring players. This supports the suitability of a linear model for this task and validates the assumptions behind Linear Regression.
+
+### 5.2 Team Win/Loss Classification Visualizations
+
+**Figure 3 — Logistic Regression: ROC Curve**
+
+![Logistic Regression - ROC Curve](figures/logreg_roc.png)
+
+The ROC curve illustrates the trade-off between true positive rate and false positive rate. Logistic Regression achieves an AUC of 0.92, indicating excellent discriminatory power. The curve stays close to the top-left corner, showing that the model reliably distinguishes wins from losses across different thresholds. This aligns with the high accuracy, precision, recall, and F1-score observed during evaluation.
+
+**Figure 4 — Logistic Regression: Confusion Matrix**
+
+![Logistic Regression - Confusion Matrix](figures/logreg_confusion.png)
+
+The confusion matrix summarizes the classification outcomes on the test set. The model correctly identifies a large number of wins and losses, with relatively few misclassifications. True positives and true negatives dominate both diagonals, confirming the model’s stability and balanced performance across classes. The errors themselves also appear symmetric, indicating no bias toward predicting wins or losses.
 
 ---
 
