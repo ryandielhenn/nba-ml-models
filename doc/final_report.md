@@ -33,7 +33,7 @@ Course: CS4661 — Introduction to Data Science
 
 ## Abstract
 
-This paper presents a complete machine learning pipeline to predict NBA player performance and team results. We use player and team statistics from the 2024–2025 NBA season to predict: (1) individual player points (PTS), and (2) whether a team will win or lose a game. Our models include Linear Regression, Random Forest, and Gradient Boosting for regression tasks, and Logistic Regression, Random Forest, and Gradient Boosting for classification. For predicting player PTS, **Linear Regression** performed best with **RMSE = 2.17**, **MAE = 1.59**, and **R² = 0.939**. For predicting team wins, **Logistic Regression** achieved the highest accuracy (**84.4%**) and ROC-AUC (**0.921**). We also review key features influencing results and outline next steps for tuning models using advanced methods like XGBoost and LightGBM.
+This paper presents a complete machine learning pipeline to predict NBA player performance and team results. We use player and team statistics from the 2024–2025 NBA season to predict: (1) individual player points (PTS), and (2) whether a team will win or lose a game. Our models include Linear Regression, Random Forest, and Gradient Boosting for regression tasks, and Logistic Regression, Random Forest, and Gradient Boosting for classification. For predicting player PTS, **Linear Regression** performed best with **RMSE = 2.17**, **MAE = 1.59**, and **R² = 0.939**. For predicting team wins, **Logistic Regression** achieved the highest accuracy (**84.4%**) and ROC-AUC (**0.921**). We also review key features influencing results in predictions of baseline as well as tuned models. We add more advanced models such as XGBoost and LightGBM to determine if more complex models yield better results.
 
 ---
 
@@ -107,13 +107,13 @@ To better understand the performance of our regression and classification models
 
 **Figure 1 — Linear Regression: Actual vs Predicted (PTS)**
 
-![Linear Regression - Actual vs Predicted](figures/linreg_actual_pred.png)
+![Linear Regression - Actual vs Predicted](figures/linreg_actual_pred.jpg)
 
 This scatter plot compares the true PTS values with the model’s predictions. The points fall closely to the diagonal “perfect prediction” line, which matches our evaluation metrics (low RMSE, high R²), confirming that the model predicts player scoring very accurately. The linear structure indicates that player scoring is mostly driven by simple stats like FGA, 3P, and FTA, making it easy to predict.
 
 **Figure 2 — Linear Regression: Residuals Plot (PTS)**
 
-![Linear Regression - Residuals Plot](figures/linreg_residuals.png)
+![Linear Regression - Residuals Plot](figures/linreg_residuals.jpg)
 
 The residual plot shows the difference between predicted and actual values across the full scoring range. The residuals are centered evenly around zero with no obvious pattern, meaning the model is not systematically over- or under-predicting for high- or low-scoring players. This supports the suitability of a linear model for this task and validates the assumptions behind Linear Regression.
 
@@ -121,13 +121,13 @@ The residual plot shows the difference between predicted and actual values acros
 
 **Figure 3 — Logistic Regression: ROC Curve**
 
-![Logistic Regression - ROC Curve](figures/logreg_roc.png)
+![Logistic Regression - ROC Curve](figures/logreg_roc.jpg)
 
 The ROC curve illustrates the trade-off between true positive rate and false positive rate. Logistic Regression achieves an AUC of 0.92, indicating excellent discriminatory power. The curve stays close to the top-left corner, showing that the model reliably distinguishes wins from losses across different thresholds. This aligns with the high accuracy, precision, recall, and F1-score observed during evaluation.
 
 **Figure 4 — Logistic Regression: Confusion Matrix**
 
-![Logistic Regression - Confusion Matrix](figures/logreg_confusion.png)
+![Logistic Regression - Confusion Matrix](figures/logreg_confusion.jpg)
 
 The confusion matrix summarizes the classification outcomes on the test set. The model correctly identifies a large number of wins and losses, with relatively few misclassifications. True positives and true negatives dominate both diagonals, confirming the model’s stability and balanced performance across classes. The errors themselves also appear symmetric, indicating no bias toward predicting wins or losses.
 
