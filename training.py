@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import data_utils
 from sklearn.model_selection import train_test_split
-from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline
+from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline, regression_configs_tuned, tune_hyperparameters, tune_hyperparameters_regression 
 from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot, plot_roc_curve, plot_confusion_matrix
 from sklearn.metrics import (
     # Regression metrics
@@ -18,6 +18,9 @@ from sklearn.metrics import (
     confusion_matrix,
 )
 from sklearn.preprocessing import StandardScaler
+from data_utils import load_nba_data
+
+
 
 def train_and_evaluate_models(X_train, 
                               X_test, 
@@ -44,12 +47,44 @@ def train_and_evaluate_models(X_train,
     print(f"MODEL TRAINING FOR {target_name}")
     print("=" * 80)
 
-    models = (
-        {**classification_configs_tuned(X_train, y_train), **classification_configs_baseline()}
-        if classification
-        else regression_configs_baseline()
-    )
+    #models = (
+    #    {**classification_configs_tuned(X_train, y_train), **classification_configs_baseline()}
+    #    if classification
+    #    else regression_configs_baseline()
+    #)
+    #results = {}
+    resulrts = {}
+    if classification:
+        
+        models = {
+            **classification_configs_tuned(X_train, y_train),
+            **classification_configs_baseline()
+    }
+
+    else:
+        # First, run hyperparameter tuning for each regression model
+        rf_search = tune_hyperparameters_regression(X_train, y_train, 'random_forest')
+        print("Best params for Random Forest:", rf_search.best_params_)
+        gb_search = tune_hyperparameters_regression(X_train, y_train, 'gradient_boosting')
+        print("Best params for Gradient Boosting:", gb_search.best_params_)
+        xgb_search = tune_hyperparameters_regression(X_train, y_train, 'xgboost')
+        print("Best params for XGBoost:", xgb_search.best_params_)
+        lgbm_search = tune_hyperparameters_regression(X_train, y_train, 'lightgbm')
+        print("Best params for LightGBM:", lgbm_search.best_params_)
+
+        # merge tuned + baseline models after tuning
+        models = {
+            **regression_configs_tuned(
+                rf_search.best_params_,
+                gb_search.best_params_,
+                xgb_search.best_params_,
+                lgbm_search.best_params_,
+            ),
+            **regression_configs_baseline(),
+        }
+      
     results = {}
+
 
     # Initialize scaler once for all models that need it
     scaler = StandardScaler()
@@ -221,6 +256,33 @@ def predict_target(df,
     print(f"\nTrain set: {X_train.shape[0]} samples")
     print(f"Test set: {X_test.shape[0]} samples")
 
+    #if classification:
+    #    y_train_rate =(y_train == 'w').mean()
+    #    y_test_rate = (y_test == 'w').mean()
+    #    print(f"Train win rate: {y_train_rate.mean():.2%}")
+    #    print(f"Test win rate: {y_test_rate.mean():.2%}")
+    if classification:
+        if y.dtype == "O" or not np.issubdtype(y.dtype, np.number):
+            from sklearn.preprocessing import LabelEncoder
+            le = LabelEncoder()
+            y_encoded = le.fit_transform(y)
+
+            print("\nClass encoding:")
+            for cls, code in zip(le.classes_, le.transform(le.classes_)):
+                print(f"  {cls} -> {code}")
+
+            # replace y with numeric encoded version
+            y = pd.Series(y_encoded, index=y.index, name=y.name)
+
+    # Split data (stratify for classification to maintain class balance)
+    stratify = y if classification else None
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state, stratify=stratify
+    )
+
+    print(f"\nTrain set: {X_train.shape[0]} samples")
+    print(f"Test set: {X_test.shape[0]} samples")
+
     if classification:
         print(f"Train win rate: {y_train.mean():.2%}")
         print(f"Test win rate: {y_test.mean():.2%}")
@@ -234,3 +296,7 @@ def predict_target(df,
     results_df = summarize_results(results, target_col)
 
     return results, results_df
+#if __name__ == "__main__":
+    # Example usage
+ #   df = load_nba_data()
+  #  results, results_df = predict_target(df, target_col="win", classification=True)
