@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import data_utils
-from sklearn.model_selection import train_test_split
-from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline, regression_configs_tuned, tune_hyperparameters, tune_hyperparameters_regression 
+from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
+from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline, regression_configs_tuned, regression_configs_tuned_all, tune_hyperparameters, tune_hyperparameters_regression 
 from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot, plot_roc_curve, plot_confusion_matrix
 from sklearn.metrics import (
     # Regression metrics
@@ -47,38 +47,32 @@ def train_and_evaluate_models(X_train,
     print(f"MODEL TRAINING FOR {target_name}")
     print("=" * 80)
 
-    #models = (
-    #    {**classification_configs_tuned(X_train, y_train), **classification_configs_baseline()}
-    #    if classification
-    #    else regression_configs_baseline()
-    #)
-    #results = {}
-    resulrts = {}
+    
+    results = {}
+    #Add cross-validation strategy to regression and classification configs
+    if classification:
+        # StratifiedKFold for classification to maintain class balance
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    else:
+        # KFold for regression for continuous targets
+        cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    #if classification, use classification configs
     if classification:
         
         models = {
             **classification_configs_tuned(X_train, y_train),
             **classification_configs_baseline()
     }
-
+    #else, use regression configs
     else:
-        # First, run hyperparameter tuning for each regression model
-        rf_search = tune_hyperparameters_regression(X_train, y_train, 'random_forest')
-        print("Best params for Random Forest:", rf_search.best_params_)
-        gb_search = tune_hyperparameters_regression(X_train, y_train, 'gradient_boosting')
-        print("Best params for Gradient Boosting:", gb_search.best_params_)
-        xgb_search = tune_hyperparameters_regression(X_train, y_train, 'xgboost')
-        print("Best params for XGBoost:", xgb_search.best_params_)
-        lgbm_search = tune_hyperparameters_regression(X_train, y_train, 'lightgbm')
-        print("Best params for LightGBM:", lgbm_search.best_params_)
-
-        # merge tuned + baseline models after tuning
+        tuned = regression_configs_tuned_all(X_train, y_train)
         models = {
             **regression_configs_tuned(
-                rf_search.best_params_,
-                gb_search.best_params_,
-                xgb_search.best_params_,
-                lgbm_search.best_params_,
+                tuned["random_forest"],
+                tuned["gradient_boosting"],
+                tuned["xgboost"],
+                tuned["lightgbm"],
+                
             ),
             **regression_configs_baseline(),
         }
@@ -256,11 +250,7 @@ def predict_target(df,
     print(f"\nTrain set: {X_train.shape[0]} samples")
     print(f"Test set: {X_test.shape[0]} samples")
 
-    #if classification:
-    #    y_train_rate =(y_train == 'w').mean()
-    #    y_test_rate = (y_test == 'w').mean()
-    #    print(f"Train win rate: {y_train_rate.mean():.2%}")
-    #    print(f"Test win rate: {y_test_rate.mean():.2%}")
+   
     if classification:
         if y.dtype == "O" or not np.issubdtype(y.dtype, np.number):
             from sklearn.preprocessing import LabelEncoder
@@ -296,7 +286,3 @@ def predict_target(df,
     results_df = summarize_results(results, target_col)
 
     return results, results_df
-#if __name__ == "__main__":
-    # Example usage
- #   df = load_nba_data()
-  #  results, results_df = predict_target(df, target_col="win", classification=True)

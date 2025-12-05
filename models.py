@@ -3,8 +3,6 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint, uniform
-
-# TODO (Jesus): Add these imports after implementing XGBoost/LightGBM
 from xgboost import XGBRegressor, XGBClassifier
 from lightgbm import LGBMRegressor, LGBMClassifier
 
@@ -179,12 +177,7 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
     """
     Tuned regression model configurations with optimized hyperparameters.
 
-    TODO (Jesus): After running tune_hyperparameters() on regression models:
-    1. Run: grid_search = tune_hyperparameters(X_train, y_train, 'random_forest')
-    2. Print: grid_search.best_params_
-    3. Update the parameters below with best_params_ values
-    4. Repeat for gradient_boosting, xgboost, lightgbm
-    5. Uncomment XGBoost and LightGBM sections after adding them
+    
 
     Returns:
         dict: Regression model configurations (tuned)
@@ -215,17 +208,7 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
             "use_scaled": False,
             "has_coef": False,
         },
-        # TODO (Jesus): Uncomment after tuning XGBoost
-        # 'XGBoost (Tuned)': {
-        #     'model': XGBRegressor(
-        #         n_estimators=100,      # TODO: Replace with best_params_
-        #         learning_rate=0.1,     # TODO: Replace with best_params_
-        #         max_depth=6,           # TODO: Replace with best_params_
-        #         random_state=42
-        #     ),
-        #     'use_scaled': False,
-        #     'has_coef': False
-        # },
+       
         'XGBoost (Tuned)': {
             'model': XGBRegressor(
                 n_estimators=xgb_params['n_estimators'],      # TODO: Replace with best_params_
@@ -236,18 +219,7 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
             'use_scaled': False,
             'has_coef': False
         },
-        # TODO (Jesus): Uncomment after tuning LightGBM
-        # 'LightGBM (Tuned)': {
-        #     'model': LGBMRegressor(
-        #         n_estimators=100,      # TODO: Replace with best_params_
-        #         learning_rate=0.1,     # TODO: Replace with best_params_
-        #         max_depth=6,           # TODO: Replace with best_params_
-        #         random_state=42,
-        #         verbose=-1
-        #     ),
-        #     'use_scaled': False,
-        #     'has_coef': False
-        # }
+      
         'LightGBM (Tuned)': {
             'model': LGBMRegressor(
                 n_estimators=lgbm_params['n_estimators'],      # TODO: Replace with best_params_
@@ -294,12 +266,7 @@ def classification_configs_tuned(X_train, y_train):
     """
     Tuned classification model configurations with optimized hyperparameters.
 
-    TODO (Jesus): After running tune_hyperparameters() on classification models:
-    1. Run: grid_search = tune_hyperparameters(X_train, y_train, 'random_forest')
-    2. Print: grid_search.best_params_
-    3. Update the parameters below with best_params_ values
-    4. Repeat for gradient_boosting, xgboost, lightgbm
-    5. Uncomment XGBoost and LightGBM sections after adding them
+    
 
     Returns:
         dict: Classification model configurations (tuned)
@@ -336,17 +303,7 @@ def classification_configs_tuned(X_train, y_train):
             "use_scaled": False,
             "has_coef": False,
         },
-        # TODO (Jesus): Uncomment after tuning XGBoost
-        # 'XGBoost (Tuned)': {
-        #     'model': XGBClassifier(
-        #         n_estimators=100,      # TODO: Replace with best_params_
-        #         learning_rate=0.1,     # TODO: Replace with best_params_
-        #         max_depth=6,           # TODO: Replace with best_params_
-        #         random_state=42
-        #     ),
-        #     'use_scaled': False,
-        #     'has_coef': False
-        # },
+       
         'XGBoost (Tuned)': {
             'model': XGBClassifier(
                 
@@ -358,18 +315,7 @@ def classification_configs_tuned(X_train, y_train):
             'use_scaled': False,
             'has_coef': False
         },
-        # TODO (Jesus): Uncomment after tuning LightGBM
-        # 'LightGBM (Tuned)': {
-        #     'model': LGBMClassifier(
-        #         n_estimators=100,      # TODO: Replace with best_params_
-        #         learning_rate=0.1,     # TODO: Replace with best_params_
-        #         max_depth=6,           # TODO: Replace with best_params_
-        #         random_state=42,
-        #         verbose=-1
-        #     ),
-        #     'use_scaled': False,
-        #     'has_coef': False
-        # }
+       
         'LightGBM (Tuned)': {
             'model': LGBMClassifier(
                 n_estimators=lgbm_search.best_params_['n_estimators'],      # TODO: Replace with best_params_
@@ -384,3 +330,22 @@ def classification_configs_tuned(X_train, y_train):
         },
     }
     return models
+#Helper method that tunes all models and returns their best parameters
+def regression_configs_tuned_all(X_train, y_train):
+    """ 
+    
+    Returns:
+        dict: Best parameters for all regression models after tuning
+    """
+    models = {"random_forest", "gradient_boosting", "xgboost", "lightgbm"}
+    #best_params will hold the best parameters for each model
+    best_params = {}
+    # Run tuning for each model
+    for model in models:
+        #Perform hyperparameter tuning
+        search = tune_hyperparameters_regression(X_train, y_train, model)
+        print(f"Best parameters for {model}: {search.best_params_}")
+        best_params[model] = search.best_params_
+    return best_params
+
+    
