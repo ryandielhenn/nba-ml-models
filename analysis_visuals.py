@@ -89,35 +89,6 @@ def feature_importance_plot(importances, feature_names, title="Feature Importanc
     plt.tight_layout()
     plt.show()
 
-def plot_player_pts_distribution(player_stats_df):
-    plt.figure()
-    plt.hist(player_stats_df["PTS"], bins=30, edgecolor="black")
-    plt.title("Distribution of Player PTS per Game")
-    plt.xlabel("PTS")
-    plt.ylabel("Count")
-    plt.tight_layout()
-    plt.show()
-
-
-def plot_team_stat_distributions(team_stats_df):
-    candidate_team_cols = ["PTS", "FG", "FGA", "3P", "3PA", "FT", "FTA", "TRB", "AST", "STL","BLK", "TOV",]    
-    team_dist_cols = [c for c in candidate_team_cols if c in team_stats_df.columns]
-    n = len(team_dist_cols)
-    rows = 2
-    cols = int(np.ceil(n / rows))
-    fig, axes = plt.subplots(rows, cols, figsize=(4 * cols, 3.5 * rows))
-    axes = np.array(axes).reshape(-1)
-
-    for ax, col in zip(axes, team_dist_cols):
-        ax.hist(team_stats_df[col], bins=30, edgecolor="black")
-        ax.set_title(col)
-        
-    for j in range(len(team_dist_cols), len(axes)):
-        fig.delaxes(axes[j])
-
-    fig.suptitle("Team-level Stat Distributions", y=1.02)
-    plt.tight_layout()
-    plt.show()
 
 def plot_player_pts_distribution(player_stats_df: pd.DataFrame) -> None:
 
