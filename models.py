@@ -59,7 +59,7 @@ def tune_hyperparameters(X_train, y_train, model_type: str = "random_forest"):
         'logistic_regression': {
             'C': uniform(0.01, 10),
             'penalty': ['l1', 'l2'],
-            'solver': ['liblinear'],
+            'solver': ['saga'],
             'max_iter': [2000],
             'class_weight': ['balanced', None]
         },
@@ -91,6 +91,7 @@ def tune_hyperparameters(X_train, y_train, model_type: str = "random_forest"):
     )
     random_search.fit(X_train, y_train)
     return random_search
+
 def tune_hyperparameters_regression(X_train, y_train, model_type: str = "random_forest"):
     """Hyperparameter tuning for REGRESSION models."""
     models = {
@@ -103,35 +104,34 @@ def tune_hyperparameters_regression(X_train, y_train, model_type: str = "random_
     # Same distributions as classification, but used with regressors
     param_distributions = {
         "random_forest": {
-            "n_estimators": randint(50, 500),
+            "n_estimators": randint(100, 500),
             "max_depth": randint(10, 50),
             "min_samples_split": randint(2, 20),
             "min_samples_leaf": randint(1, 10),
             "max_features": ["sqrt", "log2", None],
         },
         "gradient_boosting": {
-            "n_estimators": randint(50, 300),
-            "learning_rate": uniform(0.01, 0.29),
+            "n_estimators": randint(100, 500),
+            "learning_rate": uniform(0.05, 0.25),
             "max_depth": randint(3, 10),
             "min_samples_split": randint(2, 20),
-            "subsample": uniform(0.6, 0.4),
+            "subsample": uniform(0.7, 0.3),
         },
         "xgboost": {
-            "n_estimators": randint(50, 500),
-            "learning_rate": uniform(0.01, 0.29),
+            "n_estimators": randint(100, 500),
+            "learning_rate": uniform(0.05, 0.25),
             "max_depth": randint(3, 10),
-            "subsample": uniform(0.6, 0.4),
-            "colsample_bytree": uniform(0.6, 0.4),
+            "subsample": uniform(0.7, 0.3),
+            "colsample_bytree": uniform(0.7, 0.3),
         },
         "lightgbm": {
-            "n_estimators": randint(50, 500),
-            "learning_rate": uniform(0.01, 0.29),
-            "max_depth": randint(3, 10),
-            "subsample": uniform(0.6, 0.4),
-            "colsample_bytree": uniform(0.6, 0.4),
+            "n_estimators": randint(100, 500),
+            "learning_rate": uniform(0.05, 0.25),
+            "max_depth": randint(3, 12),
+            "subsample": uniform(0.7, 0.3),
+            "colsample_bytree": uniform(0.7, 0.3),
         },
     }
-
     random_search = RandomizedSearchCV(
         estimator=models[model_type],
         param_distributions=param_distributions[model_type],
@@ -184,7 +184,7 @@ def regression_configs_baseline():
     return models
 
 
-def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
+def regression_configs_tuned(X_train, y_train):
     """
     Tuned regression model configurations with optimized hyperparameters.
 
@@ -193,17 +193,16 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
     Returns:
         dict: Regression model configurations (tuned)
     """
+
+    rf_search = tune_hyperparameters_regression(X_train, y_train, 'random_forest')
+    gb_search = tune_hyperparameters_regression(X_train, y_train, 'gradient_boosting')
+    xgb_search = tune_hyperparameters_regression(X_train, y_train, 'xgboost')
+    lgbm_search = tune_hyperparameters_regression(X_train, y_train, 'lightgbm')
+
     models = {
-        "Linear Regression": {
-            "model": LinearRegression(),
-            "use_scaled": True,
-            "has_coef": True,
-        },
         "Random Forest (Tuned)": {
             "model": RandomForestRegressor(
-                n_estimators=rf_params['n_estimators'],  
-                max_depth=rf_params['max_depth'],  
-                min_samples_split=rf_params['min_samples_split'],  
+                **rf_search.best_params_,
                 random_state=42,
             ),
             "use_scaled": False,
@@ -211,9 +210,7 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
         },
         "Gradient Boosting (Tuned)": {
             "model": GradientBoostingRegressor(
-                n_estimators=gb_params['n_estimators'],  
-                learning_rate=gb_params['learning_rate'],  
-                max_depth=gb_params['max_depth'],  
+                **gb_search.best_params_,
                 random_state=42,
             ),
             "use_scaled": False,
@@ -222,9 +219,7 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
        
         'XGBoost (Tuned)': {
             'model': XGBRegressor(
-                n_estimators=xgb_params['n_estimators'],     
-                learning_rate=xgb_params['learning_rate'],     
-                max_depth=xgb_params['max_depth'],           
+                **xgb_search.best_params_,
                 random_state=42
             ),
             'use_scaled': False,
@@ -233,9 +228,7 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
       
         'LightGBM (Tuned)': {
             'model': LGBMRegressor(
-                n_estimators=lgbm_params['n_estimators'],      
-                learning_rate=lgbm_params['learning_rate'],    
-                max_depth=lgbm_params['max_depth'],           
+                **lgbm_search.best_params_,
                 random_state=42,
                 verbose=-1
             ),
@@ -283,7 +276,7 @@ def classification_configs_baseline():
     return models
 
 
-def classification_configs_tuned(X_train, y_train):
+def classification_configs_tuned(X_train, y_train, X_train_scaled):
     """
     Tuned classification model configurations with optimized hyperparameters.
 
@@ -293,7 +286,7 @@ def classification_configs_tuned(X_train, y_train):
         dict: Classification model configurations (tuned)
     """
     # Run tuning for each model
-    logreg_search = tune_hyperparameters(X_train, y_train, 'logistic_regression')
+    logreg_search = tune_hyperparameters(X_train_scaled, y_train, 'logistic_regression')
     rf_search = tune_hyperparameters(X_train, y_train, 'random_forest')
     gb_search = tune_hyperparameters(X_train, y_train, 'gradient_boosting')
     xgb_search = tune_hyperparameters(X_train, y_train, 'xgboost')
@@ -350,22 +343,3 @@ def classification_configs_tuned(X_train, y_train):
         },
     }
     return models
-#Helper method that tunes all models and returns their best parameters
-def regression_configs_tuned_all(X_train, y_train):
-    """ 
-    
-    Returns:
-        dict: Best parameters for all regression models after tuning
-    """
-    models = {"random_forest", "gradient_boosting", "xgboost", "lightgbm"}
-    #best_params will hold the best parameters for each model
-    best_params = {}
-    # Run tuning for each model
-    for model in models:
-        #Perform hyperparameter tuning
-        search = tune_hyperparameters_regression(X_train, y_train, model)
-        print(f"Best parameters for {model}: {search.best_params_}")
-        best_params[model] = search.best_params_
-    return best_params
-
-    
