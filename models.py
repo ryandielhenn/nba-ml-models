@@ -169,6 +169,17 @@ def regression_configs_baseline():
             "use_scaled": False,
             "has_coef": False,
         },
+        
+        "XGBoost": {
+            "model": XGBRegressor(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
+        },
+        "LightGBM": {
+            "model": LGBMRegressor(n_estimators=100, random_state=42, verbose=-1),
+            "use_scaled": False,
+            "has_coef": False,
+        },
     }
     return models
 
@@ -190,9 +201,9 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
         },
         "Random Forest (Tuned)": {
             "model": RandomForestRegressor(
-                n_estimators=rf_params['n_estimators'],  # TODO: Replace with best_params_['n_estimators']
-                max_depth=rf_params['max_depth'],  # TODO: Replace with best_params_['max_depth']
-                min_samples_split=rf_params['min_samples_split'],  # TODO: Replace with best_params_['min_samples_split']
+                n_estimators=rf_params['n_estimators'],  
+                max_depth=rf_params['max_depth'],  
+                min_samples_split=rf_params['min_samples_split'],  
                 random_state=42,
             ),
             "use_scaled": False,
@@ -200,9 +211,9 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
         },
         "Gradient Boosting (Tuned)": {
             "model": GradientBoostingRegressor(
-                n_estimators=gb_params['n_estimators'],  # TODO: Replace with best_params_['n_estimators']
-                learning_rate=gb_params['learning_rate'],  # TODO: Replace with best_params_['learning_rate']
-                max_depth=gb_params['max_depth'],  # TODO: Replace with best_params_['max_depth']
+                n_estimators=gb_params['n_estimators'],  
+                learning_rate=gb_params['learning_rate'],  
+                max_depth=gb_params['max_depth'],  
                 random_state=42,
             ),
             "use_scaled": False,
@@ -211,9 +222,9 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
        
         'XGBoost (Tuned)': {
             'model': XGBRegressor(
-                n_estimators=xgb_params['n_estimators'],      # TODO: Replace with best_params_
-                learning_rate=xgb_params['learning_rate'],     # TODO: Replace with best_params_
-                max_depth=xgb_params['max_depth'],           # TODO: Replace with best_params_
+                n_estimators=xgb_params['n_estimators'],     
+                learning_rate=xgb_params['learning_rate'],     
+                max_depth=xgb_params['max_depth'],           
                 random_state=42
             ),
             'use_scaled': False,
@@ -222,9 +233,9 @@ def regression_configs_tuned(rf_params, gb_params, xgb_params, lgbm_params):
       
         'LightGBM (Tuned)': {
             'model': LGBMRegressor(
-                n_estimators=lgbm_params['n_estimators'],      # TODO: Replace with best_params_
-                learning_rate=lgbm_params['learning_rate'],     # TODO: Replace with best_params_
-                max_depth=lgbm_params['max_depth'],           # TODO: Replace with best_params_
+                n_estimators=lgbm_params['n_estimators'],      
+                learning_rate=lgbm_params['learning_rate'],    
+                max_depth=lgbm_params['max_depth'],           
                 random_state=42,
                 verbose=-1
             ),
@@ -255,6 +266,16 @@ def classification_configs_baseline():
         },
         "Gradient Boosting": {
             "model": GradientBoostingClassifier(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
+        },
+        "XGBoost": {
+            "model": XGBClassifier(n_estimators=100, random_state=42),
+            "use_scaled": False,
+            "has_coef": False,
+        },
+        "LightGBM": {
+            "model": LGBMClassifier(n_estimators=100, random_state=42, verbose=-1),
             "use_scaled": False,
             "has_coef": False,
         },
@@ -307,9 +328,9 @@ def classification_configs_tuned(X_train, y_train):
         'XGBoost (Tuned)': {
             'model': XGBClassifier(
                 
-                n_estimators=xgb_search.best_params_['n_estimators'],      # TODO: Replace with best_params_
-                learning_rate=xgb_search.best_params_['learning_rate'],     # TODO: Replace with best_params_
-                max_depth=xgb_search.best_params_['max_depth'],           # TODO: Replace with best_params_
+                n_estimators=xgb_search.best_params_['n_estimators'],      
+                learning_rate=xgb_search.best_params_['learning_rate'],    
+                max_depth=xgb_search.best_params_['max_depth'],           
                 random_state=42
             ),
             'use_scaled': False,
@@ -318,10 +339,9 @@ def classification_configs_tuned(X_train, y_train):
        
         'LightGBM (Tuned)': {
             'model': LGBMClassifier(
-                n_estimators=lgbm_search.best_params_['n_estimators'],      # TODO: Replace with best_params_
-                learning_rate=lgbm_search.best_params_['learning_rate'],     # TODO: Replace with best_params_
-                max_depth=lgbm_search.best_params_['max_depth'],           # TODO: Replace with best_params_
-                random_state=42,
+                n_estimators=lgbm_search.best_params_['n_estimators'],      
+                learning_rate=lgbm_search.best_params_['learning_rate'],     
+                max_depth=lgbm_search.best_params_['max_depth'],          
                 verbose=-1
             ),
         
