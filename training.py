@@ -153,8 +153,6 @@ def train_and_evaluate_models(X_train,
             plot_roc_curve(model_name, model, X_test_use, y_test)
             plot_confusion_matrix(model_name, model, X_test_use, y_test)
             
-            
-            
             #calculate classification metrics
             #store in results dict
             classification_metrics = {
