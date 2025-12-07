@@ -16,7 +16,6 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
     roc_auc_score,
-    confusion_matrix,
 )
 from sklearn.preprocessing import StandardScaler
 
