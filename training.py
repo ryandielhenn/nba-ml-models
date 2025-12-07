@@ -25,8 +25,6 @@ def train_and_evaluate_models(X_train,
                               X_test, 
                               y_train, 
                               y_test, 
-                              feature_cols, 
-                              target_name, 
                               classification=False):
     """
     Train and evaluate all models for a given target variable.
@@ -42,9 +40,6 @@ def train_and_evaluate_models(X_train,
     Returns:
         dict: Results for each model
     """
-    print("\n" + "=" * 80)
-    print(f"MODEL TRAINING FOR {target_name}")
-    print("=" * 80)
 
     # Initialize scaler once for all models that need it
     scaler = StandardScaler()
@@ -52,7 +47,6 @@ def train_and_evaluate_models(X_train,
     X_test_scaled = scaler.transform(X_test)
 
     
-    results = {}
     #Add cross-validation strategy to regression and classification configs
     if classification:
         # StratifiedKFold for classification to maintain class balance
@@ -77,13 +71,7 @@ def train_and_evaluate_models(X_train,
       
     results = {}
 
-
-
     for model_name, config in models.items():
-        print("\n" + "-" * 80)
-        print(f"Model: {model_name}")
-        print("-" * 80)
-        
   
         # Select scaled or unscaled data based on model requirements
         X_train_use = X_train_scaled if config["use_scaled"] else X_train
@@ -117,8 +105,6 @@ def train_and_evaluate_models(X_train,
             return_train_score=False
         )
         
-        results[model_name] = {}
-        
         if classification:
             results[model_name] = {
                 "CV_Accuracy": cv_results['test_accuracy'].mean(),
@@ -127,20 +113,12 @@ def train_and_evaluate_models(X_train,
                 "CV_F1": cv_results['test_f1'].mean(),
                 "CV_ROC-AUC": cv_results['test_roc_auc'].mean(),
             }
-            print(f"Cross-Validation Accuracy: {results[model_name]['CV_Accuracy']:.4f}")
-            print(f"Cross-Validation Precision: {results[model_name]['CV_Precision']:.4f}")
-            print(f"Cross-Validation Recall: {results[model_name]['CV_Recall']:.4f}")
-            print(f"Cross-Validation F1: {results[model_name]['CV_F1']:.4f}")
-            print(f"Cross-Validation ROC-AUC: {results[model_name]['CV_ROC-AUC']:.4f}")
         else:
             results[model_name] = {
                 "CV_RMSE": -cv_results['test_neg_rmse'].mean(),
                 "CV_MAE": -cv_results['test_neg_mae'].mean(),
                 "CV_R²": cv_results['test_r2'].mean(),
             }
-            print(f"Cross-Validation RMSE: {results[model_name]['CV_RMSE']:.4f}")
-            print(f"Cross-Validation MAE: {results[model_name]['CV_MAE']:.4f}")
-            print(f"Cross-Validation R²: {results[model_name]['CV_R²']:.4f}")            
             
         model.fit(X_train_use, y_train)
         y_pred = model.predict(X_test_use)
@@ -150,8 +128,6 @@ def train_and_evaluate_models(X_train,
             # Classification metrics
             y_pred_proba = model.predict_proba(X_test_use)[:, 1]
 
-            plot_roc_curve(model_name, model, X_test_use, y_test)
-            plot_confusion_matrix(model_name, model, X_test_use, y_test)
             
             #calculate classification metrics
             #store in results dict
@@ -165,25 +141,8 @@ def train_and_evaluate_models(X_train,
             #update results dict
             results[model_name].update(classification_metrics)
             
-            # Print metrics
-            for metric, value in results[model_name].items():
-                print(f"{metric}: {value:.4f}")
-
-            # Print confusion matrix
-            cm = confusion_matrix(y_test, y_pred)
-            print("\nConfusion Matrix:")
-            print("  Predicted:  Loss | Win")
-            print(f"Actual Loss:  {cm[0][0]:3d} | {cm[0][1]:3d}")
-            print(f"Actual Win:   {cm[1][0]:3d} | {cm[1][1]:3d}")
 
         else:
-            # Visualize results for regression models
-            actual_vs_pred(y_test, y_pred, title=f"{model_name} - Actual vs Predicted")
-            # Visualize residuals for regression models
-            residuals_plot(y_test, y_pred, title=f"{model_name} - Residuals Plot")
-            # Visualize feature importances if available
-            if hasattr(model, "feature_importances_"):
-                feature_importance_plot(model.feature_importances_, feature_cols, title=f"{model_name} - Feature Importances")
         
             # Regression metrics
             rmse = np.sqrt(mean_squared_error(y_test, y_pred))
@@ -196,79 +155,75 @@ def train_and_evaluate_models(X_train,
             #update results dict
             results[model_name].update(regression_metrics)
 
-            # Print metrics
-            print(f"RMSE: {rmse:.4f}")
-            print(f"MAE: {mae:.4f}")
-            print(f"R²: {r2:.4f}")
-
-        # Print coefficients or feature importances (same for both)
-        if config["has_coef"] and hasattr(model, "coef_"):
-            print("\nFeature Coefficients:")
-            coefs = model.coef_[0] if classification else model.coef_
-            for feature, coef in zip(feature_cols, coefs):
-                print(f"  {feature}: {coef:.4f}")
-        elif hasattr(model, "feature_importances_"):
-            print("\nFeature Importances:")
-            for feature, importance in zip(feature_cols, model.feature_importances_):
-                print(f"  {feature}: {importance:.4f}")
     return results
 
 
 def summarize_results(results, target_name):
     """
-    Print summary of model results.
+    Print summary of model results including both CV and test metrics.
     Auto-detects classification vs regression based on metrics.
-
+    
     Args:
         results: Dictionary of model results
         target_name: Name of target variable
+        
+    Returns:
+        pd.DataFrame: Results organized as a DataFrame
     """
     print("\n" + "=" * 80)
     print(f"SUMMARY OF RESULTS FOR {target_name}")
     print("=" * 80)
-
+    
     results_df = pd.DataFrame(results).T
-
+    
     # Auto-detect task type based on metrics present
     is_classification = "TEST_Accuracy" in results_df.columns
-
+    
     if is_classification:
-        # Print classification metrics
-        print(
-            f"\n{'':<20s}{'TEST_Accuracy':>10s}{'TEST_Precision':>12s}{'TEST_Recall':>10s}{'F1':>10s}{'ROC-AUC':>10s}"
-        )
+        # Print CV metrics
+        print("\nCross-Validation Performance:")
+        print(f"{'Model':<35s}{'CV Acc':>10s}{'CV F1':>10s}{'CV AUC':>10s}")
         for model_name, row in results_df.iterrows():
-            print(
-                f"{model_name:<20s}{row['TEST_Accuracy']:>10.4f}{row['TEST_Precision']:>12.4f}{row['TEST_Recall']:>10.4f}{row['TEST_F1']:>10.4f}{row['TEST_ROC-AUC']:>10.4f}"
-            )
-
-        # Identify best models
-        best_roc = results_df["TEST_ROC-AUC"].idxmax()
-        best_f1 = results_df["TEST_F1"].idxmax()
-        best_acc = results_df["TEST_Accuracy"].idxmax()
-
-        print(f"\nBest Model (by ROC-AUC): {best_roc}")
-        print(f"Best Model (by F1-Score): {best_f1}")
-        print(f"Best Model (by Accuracy): {best_acc}")
+            print(f"{model_name:<35s}{row['CV_Accuracy']:>10.4f}{row['CV_F1']:>10.4f}{row['CV_ROC-AUC']:>10.4f}")
+        
+        # Print test metrics
+        print("\nTest Set Performance:")
+        print(f"{'Model':<35s}{'Test Acc':>10s}{'Test Prec':>12s}{'Test Rec':>10s}{'Test F1':>10s}{'Test AUC':>10s}")
+        for model_name, row in results_df.iterrows():
+            print(f"{model_name:<35s}{row['TEST_Accuracy']:>10.4f}{row['TEST_Precision']:>12.4f}{row['TEST_Recall']:>10.4f}{row['TEST_F1']:>10.4f}{row['TEST_ROC-AUC']:>10.4f}")
+        
+        # Identify best models (using CV metrics for fair comparison)
+        best_roc = results_df["CV_ROC-AUC"].idxmax()
+        best_f1 = results_df["CV_F1"].idxmax()
+        best_acc = results_df["CV_Accuracy"].idxmax()
+        
+        print(f"\nBest Model (by CV ROC-AUC): {best_roc}")
+        print(f"Best Model (by CV F1-Score): {best_f1}")
+        print(f"Best Model (by CV Accuracy): {best_acc}")
+        
     else:
-        # Print regression metrics
-        print(f"\n{'':<20s}{'TEST_RMSE':>10s}{'TEST_MAE':>12s}{'TEST_R²':>10s}")
+        # Print CV metrics
+        print("\nCross-Validation Performance:")
+        print(f"{'Model':<35s}{'CV RMSE':>12s}{'CV MAE':>12s}{'CV R²':>10s}")
         for model_name, row in results_df.iterrows():
-            print(
-                f"{model_name:<20s}{row['TEST_RMSE']:>10.6f}{row['TEST_MAE']:>12.6f}{row['TEST_R²']:>10.6f}"
-            )
-
-        # Identify best models
-        best_model_r2 = results_df["TEST_R²"].idxmax()
-        best_model_rmse = results_df["TEST_RMSE"].idxmin()
-        best_model_mae = results_df["TEST_MAE"].idxmin()
-
-        print(f"\nBest Model (by R²): {best_model_r2}")
-        print(f"Best Model (by RMSE): {best_model_rmse}")
-        print(f"Best Model (by MAE): {best_model_mae}")
-
+            print(f"{model_name:<35s}{row['CV_RMSE']:>12.6f}{row['CV_MAE']:>12.6f}{row['CV_R²']:>10.6f}")
+        
+        # Print test metrics
+        print("\nTest Set Performance:")
+        print(f"{'Model':<35s}{'Test RMSE':>12s}{'Test MAE':>12s}{'Test R²':>10s}")
+        for model_name, row in results_df.iterrows():
+            print(f"{model_name:<35s}{row['TEST_RMSE']:>12.6f}{row['TEST_MAE']:>12.6f}{row['TEST_R²']:>10.6f}")
+        
+        # Identify best models (using CV metrics for fair comparison)
+        best_model_r2 = results_df["CV_R²"].idxmax()
+        best_model_rmse = results_df["CV_RMSE"].idxmin()
+        best_model_mae = results_df["CV_MAE"].idxmin()
+        
+        print(f"\nBest Model (by CV R²): {best_model_r2}")
+        print(f"Best Model (by CV RMSE): {best_model_rmse}")
+        print(f"Best Model (by CV MAE): {best_model_mae}")
+    
     return results_df
-
 
 def predict_target(df, 
                    target_col, 
@@ -333,10 +288,8 @@ def predict_target(df,
 
     # Train and evaluate models
     results = train_and_evaluate_models(
-        X_train, X_test, y_train, y_test, feature_cols, target_col, classification
+        X_train, X_test, y_train, y_test, classification
     )
 
     # Summarize results (auto-detects task type)
-    results_df = summarize_results(results, target_col)
-
-    return results, results_df
+    summarize_results(results, target_col)

@@ -39,8 +39,6 @@ def tune_hyperparameters(X_train, y_train, model_type: str = "random_forest"):
         'lightgbm': LGBMClassifier(random_state=42, verbose=-1)
     }
 
-    # Use RandomizedSearchCV because it's faster. 
-    # Fixed number of tries instead of all possible parameter combinations.
     param_distributions = {
         'random_forest': {
             'n_estimators': randint(50, 500),
@@ -79,6 +77,9 @@ def tune_hyperparameters(X_train, y_train, model_type: str = "random_forest"):
         }   
     }
 
+    # Use RandomizedSearchCV because it's faster. 
+    # Fixed number of tries instead of all possible parameter combinations.
+    print(f"Tuning {model_type}...")
     random_search = RandomizedSearchCV(
         estimator=models[model_type],
         param_distributions=param_distributions[model_type],
@@ -132,6 +133,8 @@ def tune_hyperparameters_regression(X_train, y_train, model_type: str = "random_
             "colsample_bytree": uniform(0.7, 0.3),
         },
     }
+
+    print(f"Tuning {model_type}...")
     random_search = RandomizedSearchCV(
         estimator=models[model_type],
         param_distributions=param_distributions[model_type],
