@@ -109,13 +109,13 @@ To better understand the performance of our regression and classification models
 
 ![Linear Regression - Actual vs Predicted](figures/linreg_actual_pred.png)
 
-This scatter plot compares the true PTS values with the model’s predictions. The points fall closely to the diagonal “perfect prediction” line, which matches our evaluation metrics (low RMSE, high R²), confirming that the model predicts player scoring very accurately. The linear structure indicates that player scoring is mostly driven by simple stats like FGA, 3P, and FTA, making it easy to predict.
+In figure 1 this scatter plot compares the PTS values with the model’s predictions. The points fall closely to the perfect prediction line(diagonal line), this means that it matches our evaluation metrics (low RMSE, high R²), confirming that the model predicts player scoring very accurately. This linear structure also indicates that player scoring is mostly driven by simple stats like FGA, 3P, and FTA, making it easy to predict.
 
 **Figure 2 — Linear Regression: Residuals Plot (PTS)**
 
 ![Linear Regression - Residuals Plot](figures/linreg_residuals.png)
 
-The residual plot shows the difference between predicted and actual values across the full scoring range. The residuals are centered evenly around zero with no obvious pattern, meaning the model is not systematically over- or under-predicting for high- or low-scoring players. This supports the suitability of a linear model for this task and validates the assumptions behind Linear Regression.
+The residual plot shows the difference between predicted and actual values across the full scoring range. The residuals cluster evenly around zero without forming any shape or curve. This means the model’s errors are random rather than biased, so it isn’t consistently predicting too high or too low for any type of player. Thou the residuals spread out slightly at higher predicted point values, this can be normal in NBA scoring but the overall distribution still appears random rather than structured. This suggests that the linear model captures the main relationship between the features and player scoring without missing any obvious pattern.
 
 ### 5.2 Team Win/Loss Classification Visualizations
 
@@ -123,7 +123,7 @@ The residual plot shows the difference between predicted and actual values acros
 
 ![Logistic Regression - ROC Curve](figures/logreg_roc.png)
 
-The ROC curve illustrates the trade-off between true positive rate and false positive rate. Logistic Regression achieves an AUC of 0.92, indicating excellent discriminatory power. The curve stays close to the top-left corner, showing that the model reliably distinguishes wins from losses across different thresholds. This aligns with the high accuracy, precision, recall, and F1-score observed during evaluation.
+The ROC curve illustrates the trade-off between true positive rate and false positive rate. Logistic Regression achieves an AUC of 0.92, indicating excellent discriminatory power. The curve stays close to the top-left corner, which is good because it shows that the model is reliably at distinguishing wins from losses across different thresholds. This aligns with the high accuracy, precision, recall, and F1-score observed during evaluation.
 
 **Figure 4 — Logistic Regression: Confusion Matrix**
 
