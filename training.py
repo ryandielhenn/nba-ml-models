@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import data_utils
+from collections import Counter
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold, cross_validate
 from models import classification_configs_baseline, classification_configs_tuned, regression_configs_baseline, regression_configs_tuned
-from analysis_visuals import actual_vs_pred, residuals_plot, feature_importance_plot, plot_roc_curve, plot_confusion_matrix
+from analysis_visuals import actual_vs_pred, residuals_plot, feature_coefficient_plot, feature_importance_plot, plot_roc_curve, plot_confusion_matrix
 from sklearn.metrics import (
     # Regression metrics
     mean_squared_error,
@@ -70,6 +71,7 @@ def train_and_evaluate_models(X_train,
         }
       
     results = {}
+    fitted_models = {}
 
     for model_name, config in models.items():
   
@@ -155,10 +157,17 @@ def train_and_evaluate_models(X_train,
             #update results dict
             results[model_name].update(regression_metrics)
 
-    return results
+        # Store fitted model with scaling info
+        fitted_models[model_name] = {
+            'model': model,
+            'use_scaled': config['use_scaled'],
+            'X_test': X_test_use  # Store the correctly scaled/unscaled test data
+        }
+
+    return results, fitted_models
 
 
-def summarize_results(results, target_name):
+def summarize_results(results, target_name, fitted_models, feature_cols, y_test):
     """
     Print summary of model results including both CV and test metrics.
     Auto-detects classification vs regression based on metrics.
@@ -201,6 +210,19 @@ def summarize_results(results, target_name):
         print(f"Best Model (by CV F1-Score): {best_f1}")
         print(f"Best Model (by CV Accuracy): {best_acc}")
         
+        best_model_name = vote(best_roc, best_f1, best_acc)
+        best_model = fitted_models[best_model_name]['model']
+        X_test = fitted_models[best_model_name]['X_test']
+
+        plot_roc_curve(best_model_name, best_model, X_test, y_test)
+        plot_confusion_matrix(best_model_name, best_model, X_test, y_test)
+        if hasattr(best_model, "feature_importances_"):
+            feature_importance_plot(best_model.feature_importances_, feature_cols, title=f"{best_model_name} - Feature Importances")
+        elif hasattr(best_model, "coef_"):
+            coefs = best_model.coef_[0]  # Binary classification
+            feature_coefficient_plot(coefs, feature_cols, title=f"{best_model_name} - Top 10 Feature Coefficients")
+
+
     else:
         # Print CV metrics
         print("\nCross-Validation Performance:")
@@ -222,8 +244,22 @@ def summarize_results(results, target_name):
         print(f"\nBest Model (by CV R²): {best_model_r2}")
         print(f"Best Model (by CV RMSE): {best_model_rmse}")
         print(f"Best Model (by CV MAE): {best_model_mae}")
-    
-    return results_df
+   
+        best_model_name = vote(best_model_r2, best_model_rmse, best_model_mae)
+        best_model = fitted_models[best_model_name]['model']
+        X_test = fitted_models[best_model_name]['X_test']
+        y_pred = best_model.predict(X_test)
+        actual_vs_pred(y_test, y_pred)
+        residuals_plot(y_test, y_pred)
+        if hasattr(best_model, "feature_importances_"):
+            feature_importance_plot(best_model.feature_importances_, feature_cols, title=f"{best_model_name} - Feature Importances")
+        elif hasattr(best_model, "coef_"):
+            feature_coefficient_plot(best_model.coef_, feature_cols, title=f"{best_model_name} - Top 10 Feature Coefficients")
+
+
+def vote(mx, my, mz):
+    votes = Counter([mx, my, mz])
+    return votes.most_common(1)[0][0]
 
 def predict_target(df, 
                    target_col, 
@@ -287,9 +323,9 @@ def predict_target(df,
         print(f"Test win rate: {y_test.mean():.2%}")
 
     # Train and evaluate models
-    results = train_and_evaluate_models(
+    results, fitted_models = train_and_evaluate_models(
         X_train, X_test, y_train, y_test, classification
     )
 
     # Summarize results (auto-detects task type)
-    summarize_results(results, target_col)
+    summarize_results(results, target_col, fitted_models, feature_cols,y_test)

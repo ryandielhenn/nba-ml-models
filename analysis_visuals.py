@@ -89,6 +89,32 @@ def feature_importance_plot(importances, feature_names, title="Feature Importanc
     plt.tight_layout()
     plt.show()
 
+def feature_coefficient_plot(coefficients, feature_names, title="Feature Coefficients", top_n=10):
+    """
+    Plot feature coefficients for linear models.
+    
+    Args:
+        coefficients: Array of feature coefficients
+        feature_names: List of feature names corresponding to the coefficients
+        title: Title for the plot
+        top_n: Number of top features to display (by absolute value)
+    """
+    # Get top N features by absolute coefficient value
+    indices = np.argsort(np.abs(coefficients))[::-1][:top_n]
+    top_coefs = coefficients[indices]
+    top_features = [feature_names[i] for i in indices]
+    
+    plt.figure(figsize=(10, 6))
+    colors = ['green' if c > 0 else 'red' for c in top_coefs]
+    plt.barh(range(len(top_coefs)), top_coefs, color=colors, align='center')
+    plt.yticks(range(len(top_coefs)), top_features)
+    plt.xlabel("Coefficient Value")
+    plt.title(title)
+    plt.gca().invert_yaxis()
+    plt.axvline(x=0, color='black', linestyle='-', linewidth=0.5)
+    plt.tight_layout()
+    plt.show()
+
 
 def plot_player_pts_distribution(player_stats_df: pd.DataFrame) -> None:
 
